@@ -70,9 +70,9 @@ python generate_icon.py
 
 4. 打包命令
 
-pyinstaller --onefile --windowed ^
-    --add-data "tcl;tcl" ^
-    --icon=icon.ico ^
+pyinstaller --onefile --windowed 
+    --add-data "tcl;tcl" 
+    --icon=icon.ico 
     torch_cuda_gui.py
 打包完成后，可执行文件位于 dist/torch_cuda_gui.exe。
 
