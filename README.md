@@ -106,5 +106,5 @@ A: 运行 nvidia-smi，右上角显示的 “CUDA Version” 即为驱动支持�
 使用 tkinter 构建 GUI
 打包工具：PyInstaller
 图标生成：Pillow
-开源协议：EPL-1.0
+开源协议：GPL-3.0
 
