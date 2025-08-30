@@ -1,0 +1,2 @@
+# torchsearch
+一种通过手动或自动输入cuda版本,推荐匹配的pytorch相关组件包版本的查询工具
