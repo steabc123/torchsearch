@@ -1,6 +1,6 @@
 # ui/app.py
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import messagebox, scrolledtext
 import re
 from core.cuda_detector import get_nvcc_version
 from core.version_mapper import get_torch_versions
@@ -79,7 +79,25 @@ class App:
             messagebox.showerror("❌ 不支持", f"暂不支持 CUDA {cuda_input} 的版本映射。\n请参考 PyTorch 官网。")
             return
 
-        torch_ver, tv_ver, ta_ver, cuda_tag = versions
+        # Support both old tuple return (torch_ver, tv_ver, ta_ver, cuda_tag)
+        # and new dict-based return {"torch":..., "torchvision":..., "torchaudio":..., "pip_tag":...}
+        if isinstance(versions, dict):
+            torch_ver = versions.get("torch")
+            tv_ver = versions.get("torchvision")
+            ta_ver = versions.get("torchaudio")
+            cuda_tag = versions.get("pip_tag")
+        else:
+            try:
+                torch_ver, tv_ver, ta_ver, cuda_tag = versions
+            except Exception:
+                messagebox.showerror("❌ 错误", "版本映射格式不正确。")
+                return
+
+        # Validate extracted values
+        if not (torch_ver and (tv_ver is not None) and (ta_ver is not None)):
+            messagebox.showerror("❌ 不支持", "未能从映射中获取完整的版本信息。")
+            return
+
         cmd = build_install_command(torch_ver, tv_ver, ta_ver, cuda_tag)
         result_msg = format_result_message(cuda_input, torch_ver, tv_ver, ta_ver, cuda_tag, cmd)
 
