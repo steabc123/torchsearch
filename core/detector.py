@@ -80,3 +80,26 @@ def get_cuda_version(timeout: float = 2.0) -> dict:
 
     return {"source": None, "version": None, "raw": "", "error": "Unable to detect CUDA version"}
 
+
+def get_gpu_status(timeout: float = 2.0) -> str:
+    """Return a short human-readable GPU status string using nvidia-smi.
+
+    Example output (multi-line):
+      GPU0: NVIDIA GeForce RTX 3080, mem 10240MiB used 1234MiB, util 12%
+
+    If nvidia-smi not available or no GPUs, returns an informative message.
+    """
+    out = _run_cmd(["nvidia-smi", "--query-gpu=name,memory.total,memory.used,utilization.gpu", "--format=csv,noheader,nounits"], timeout=timeout)
+    if not out.strip():
+        return "无法获取 GPU 信息 (nvidia-smi 不可用或没有 NVIDIA GPU)"
+    lines = [l.strip() for l in out.strip().splitlines() if l.strip()]
+    parsed = []
+    for idx, line in enumerate(lines):
+        # each line: name, total, used, util
+        parts = [p.strip() for p in line.split(',')]
+        if len(parts) >= 4:
+            name, total, used, util = parts[0:4]
+            parsed.append(f"GPU{idx}: {name}, mem {total} MiB used {used} MiB, util {util} %")
+        else:
+            parsed.append(f"GPU{idx}: {line}")
+    return "\n".join(parsed)
